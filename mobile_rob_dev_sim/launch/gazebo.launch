@@ -2,7 +2,7 @@
 <!-- gazebo.launch
 
 Created by: Kelen Teixeira Vivaldini on Nov 30, 2023
-Last Modified: vivaldini
+Last Modified: Gabriel Andreazi Bertho
 
 Description: This is the gazebo launch for the mobile_rob_dev_sim V6 robot in a simulation environment.
 -->
@@ -110,4 +110,3 @@ Description: This is the gazebo launch for the mobile_rob_dev_sim V6 robot in a 
     <node pkg="rviz" type="rviz" name="rviz" args="-d $(find mobile_rob_dev_sim)/rviz/astar.rviz"/>
   
 </launch>
-

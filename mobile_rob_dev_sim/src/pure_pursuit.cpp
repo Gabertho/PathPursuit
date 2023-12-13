@@ -1,8 +1,3 @@
-/* A ROS implementation of the Pure pursuit path tracking algorithm (Coulter 1992).
-   Terminology (mostly :) follows:
-   Coulter, Implementation of the pure pursuit algoritm, 1992 and 
-   Sorniotti et al. Path tracking for Automated Driving, 2017.
-*/
 #include <string>
 #include <iostream>
 #include <cmath>
