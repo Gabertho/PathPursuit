@@ -46,3 +46,34 @@ source /home/$USER/workspace/devel/setup.bash
 
 
 
+# Adopted methodology and results
+
+## Mapping
+For the mapping step, we used gmapping (http://wiki.ros.org/gmapping), navigating the simulated environment with teleop. With this, we obtain the map.yaml and map.pgm that represent the environment.
+
+## Localization
+
+For localization, we use the ROS amcl package, which implements the Adaptive Monte Carlo Localizer approach. We used this algorithm, instead of using odometry data, as this can accumulate errors throughout use, leading to possible failures in trajectory planning.
+
+
+## Trajectory Planning
+For trajectory planning, we implemented the A* (Astar) algorithm, which calculates the optimal path between the starting and ending points, using a function composed of the cost of the movement plus a heuristic. The heuristic used was Manhattan, as it generates paths that are relatively more "distant from obstacles", such as walls, in relation to the Euclidean distance, which reduces possible collision problems.
+
+The map, obtained in the previous step, is published by the topic /map (package map_server), and used as an Occupancy Grid in the implementation of the A* algorithm (astar.cpp and astar.h)
+
+## Navigation 
+For navigation, we use an implementation of the Pure Pursuit Path Tracking algorithm. It computes the angular velocity command that moves the robot from its current position to reach some look-ahead point in front of the robot, while the linear velocity is assumed constant. Speed ​​commands are published in the /robot/cmd_vel topic
+
+## Obstacle Avoidance
+For obstacle avoidance, we implemented a "naive" approach using the LIDAR sensor. The approach consists of stopping the robot's movement on the optimal path when an obstacle is detected, and keeping the robot stationary until the obstacle is no longer detected, thus resuming its trajectory.
+
+
+## Results
+
+Regarding the results, we obtain a very interesting autonomous navigation approach, although there are some flaws.
+These flaws, which involve coordinate transformation problems in the Pure Pursuit algorithm, and the need to adjust parameters in the Astar algorithm, will be corrected as soon as possible. However, we want to emphasize that the approach has great potential to meet the scope of the project.
+
+
+[![IMAGE ALT TEXT]([http://img.youtube.com/vi/YOUTUBE_VIDEO_ID_HERE/0.jpg](https://img.youtube.com/vi/JWlF2P1npUk/hqdefault.jpg))]([http://www.youtube.com/watch?v=YOUTUBE_VIDEO_ID_HERE](https://youtu.be/JWlF2P1npUk)https://youtu.be/JWlF2P1npUk "Trajectory Planning and Autonomous Navigation ROS ")
+
+
