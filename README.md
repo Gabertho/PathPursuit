@@ -42,3 +42,7 @@ catkin build
 source /home/$USER/workspace/devel/setup.bash
 ```
 
+### (optional) if the steps above don't work, follow the installation steps at https://github.com/vivaldini/dcrobot and then replace the mobile_robot_dev_sim and envorobotz directories for the ones in this repository.
+
+
+
