@@ -102,6 +102,53 @@ For obstacle avoidance, we implemented a "naive" approach using the LIDAR sensor
 
 # Execution Flow
 
+## astar_node.cpp
+
+### Execution Flow and Main Components
+- **Main Function**: 
+  - `int main()`: Initializes the ROS node and sets up topic subscriptions and publications.
+- **ROS Topics**:
+  - **Subscriptions**: For receiving occupancy grid (map data), start, and target points.
+  - **Publications**: For publishing the calculated optimal path and possibly an inflated map.
+- **Key Methods and Classes**:
+  - `class GridWorld`: Represents the grid structure for the A* algorithm.
+  - `void ProcessQuery()`: Processes incoming pathfinding requests.
+  - `Callback` Functions: Handles incoming data from subscribed topics.
+  - `void PublishPath_()`: Publishes the calculated path.
+
+#### Overview
+This file implements the A* algorithm for pathfinding in a ROS environment. It uses ROS topics for data input and output, and callback functions for asynchronous communication within the ROS network.
+
+---
+
+## pure_pursuit.cpp
+
+### Execution Flow and Main Components
+- **Main Function**: 
+  - `int main()`: Initializes the ROS node and manages interactions.
+- **ROS Topics**:
+  - **Subscriptions**: For receiving path data or sensor inputs.
+  - **Publications**: For sending out control commands based on the algorithm's output.
+- **Key Methods and Classes**:
+  - `class PurePursuit`: Encapsulates the Pure Pursuit algorithm logic.
+  - `cmd_generator()`: Generates control commands.
+  - `waypoints_listener()`: Callback for receiving path data.
+  - `checkcase()`, `laser_callback()`: Process environmental data.
+  - `run()`: Runs the main process of the algorithm.
+
+#### Overview
+`pure_pursuit.cpp` is set up for path following using the Pure Pursuit algorithm in a ROS framework. It demonstrates how ROS nodes can subscribe to data, process it, and publish control commands for robot navigation.
+
+---
+
+You can see the nodes interactiond and the transformations in the images below:
+
+![rosgraph](https://github.com/Gabertho/Trajectory-Planning-and-Autonomous-Navigation-ROS/assets/59297927/47148b49-23a3-4f74-8016-a6674b806d73)
+
+![tftree](https://github.com/Gabertho/Trajectory-Planning-and-Autonomous-Navigation-ROS/assets/59297927/1c802772-8732-42f5-a8a2-f12f4c79da32)
+
+
+
 
 # Results
 
