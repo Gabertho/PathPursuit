@@ -241,7 +241,6 @@ void PurePursuit::cmd_generator(nav_msgs::Odometry odom)
       {
         v_ = copysign(v_max_, v_);
         
-        //double lateral_offset = lookahead_.transform.translation.y;
         double lateral_offset = lookahead_.transform.translation.y;
         cmd_vel_.angular.z = std::min(2*v_/lookahead_distance_*lookahead_distance_*lateral_offset, w_max_);
 
@@ -274,7 +273,6 @@ void PurePursuit::cmd_generator(nav_msgs::Odometry odom)
       }
       pub_vel_.publish(cmd_vel_);
       
-      //pub_vel_.publish(cmd_vel_);
       // Publish the ackerman_steering command
       pub_acker_.publish(cmd_acker_);
       // Publish the lookahead_marker for visualization
@@ -370,8 +368,6 @@ int main(int argc, char**argv)
 
   PurePursuit controller;
   controller.run();
-
-  //ros::spin();
 
   return 0;
 }
