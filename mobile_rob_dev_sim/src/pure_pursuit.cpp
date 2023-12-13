@@ -4,10 +4,10 @@
 #include <algorithm>
 
 #include <ros/ros.h>
+#include <sensor_msgs/LaserScan.h>
 #include <tf2_ros/transform_listener.h>
 #include <tf2_ros/transform_broadcaster.h>
 #include <geometry_msgs/TransformStamped.h>
-#include <geometry_msgs/PoseWithCovarianceStamped.h>
 #include <geometry_msgs/Twist.h>
 #include <nav_msgs/Path.h>
 #include <nav_msgs/Odometry.h>
@@ -17,13 +17,23 @@
 
 using std::string;
 
+
+geometry_msgs::Twist message;
+
+bool hasObstacle = false;
+
 class PurePursuit
 {
   public:
     PurePursuit();
     // Generate the command for the vehicle according to the current position and the waypoints
-    void cmd_generator(geometry_msgs::PoseWithCovarianceStamped amcl_pose);    // Listen to the waypoints topic
+    void cmd_generator(nav_msgs::Odometry odom);
+    // Listen to the waypoints topic
     void waypoints_listener(nav_msgs::Path path);
+
+    void checkcase(float right , float center , float left);
+    float smallestofarray(float arr[] , int n);
+    void laser_callback(const sensor_msgs::LaserScan::ConstPtr& msg);
     // Transform the pose to the base_link
     KDL::Frame trans2base(const geometry_msgs::Pose& pose, const geometry_msgs::Transform& tf);
     // Eucledian distance computation
@@ -52,7 +62,7 @@ class PurePursuit
     
     // ROS
     ros::NodeHandle nh_, nh_private_;
-    ros::Subscriber sub_pose_, sub_path_;
+    ros::Subscriber sub_odom_, sub_path_, sub_laser_;
     ros::Publisher pub_vel_, pub_acker_, pub_marker_;
     tf2_ros::Buffer tf_buffer_;
     tf2_ros::TransformListener tf_listener_;
@@ -61,6 +71,68 @@ class PurePursuit
     string map_frame_id_, robot_frame_id_, lookahead_frame_id_, acker_frame_id_;
 
 };
+
+void PurePursuit::checkcase(float right , float center , float left)
+{
+    if (center < 1.0)
+    {
+      std::cout<<"OBSTAAAACULOOO";
+      hasObstacle = true;
+    }
+    else 
+    {
+      std::cout<<"nadaaaaaaaaaa";
+      hasObstacle = false;
+    }
+
+
+}
+
+float PurePursuit::smallestofarray(float arr[] , int n)
+{
+    float temp = 2.0;
+    for(int i=0; i<n; i++) 
+    {
+      if(temp>arr[i]) 
+      {
+         temp=arr[i];
+      }
+   }
+   return temp;
+}
+
+void PurePursuit::laser_callback(const sensor_msgs::LaserScan::ConstPtr& msg)
+{
+    int length = msg->ranges.size();
+    int lendiv3 = length/3;
+    float right[length/3] , center[length/3] , left[length/3];
+    for( int i=0 ; i < length ; i++)
+    {
+        if(i < lendiv3)
+        {
+            right[i] = msg->ranges[i];
+        }
+        else if ((i > lendiv3-1) && (i < 2*lendiv3))
+        {
+            center[i-240] = msg->ranges[i];
+        }
+        else if (((2*lendiv3)-1) && (i < length))
+        {
+            left[i - 480] = msg->ranges[i];
+        }        
+    }
+    float rightmin = smallestofarray(right , length/3);
+    float centermin = smallestofarray(center , length/3);
+    float leftmin = smallestofarray(left , length/3);
+
+    std::cout<<"  "<<rightmin;
+    std::cout<<"  "<<centermin;
+    std::cout<<"   "<<leftmin;
+    std::cout<<"\n"; 
+
+    checkcase(rightmin , centermin , leftmin);
+
+}
 
 PurePursuit::PurePursuit() : lookahead_distance_(1.0), v_max_(0.6), v_(v_max_), w_max_(1.0), position_tolerance_(0.1), idx_(0),
                              goal_reached_(false), nh_private_("~"), tf_listener_(tf_buffer_),
@@ -94,138 +166,163 @@ PurePursuit::PurePursuit() : lookahead_distance_(1.0), v_max_(0.6), v_(v_max_), 
   
   sub_path_ = nh_.subscribe("/optimal_path", 1, &PurePursuit::waypoints_listener, this);
 
-  sub_pose_ = nh_.subscribe("/amcl_pose", 1, &PurePursuit::cmd_generator, this);
+  sub_odom_ = nh_.subscribe("/scan", 1, &PurePursuit::laser_callback, this);
+
+  sub_laser_ = nh_.subscribe("/odom", 1, &PurePursuit::cmd_generator, this);
+
   pub_vel_ = nh_.advertise<geometry_msgs::Twist>("/robot/cmd_vel", 1);
   pub_acker_ = nh_.advertise<ackermann_msgs::AckermannDriveStamped>("cmd_acker", 1);
   pub_marker_ = nh_.advertise<visualization_msgs::Marker>("lookahead", 1);
 
 }
 
-void PurePursuit::cmd_generator(geometry_msgs::PoseWithCovarianceStamped amcl_pose)
+void PurePursuit::cmd_generator(nav_msgs::Odometry odom)
 {
-    if (path_loaded_)
+  if (path_loaded_)
+  {
+    // Get the current pose
+    geometry_msgs::TransformStamped tf;
+    try
     {
-        // Extrai a pose atual do robô da mensagem do AMCL
-        geometry_msgs::Pose current_pose = amcl_pose.pose.pose;
-
-        // Tenta obter a transformação do mapa para o frame do robô
-        geometry_msgs::TransformStamped map_to_robot_transform;
-        try
+      tf = tf_buffer_.lookupTransform(map_frame_id_, robot_frame_id_, ros::Time(0));
+      // Detetmine the waypoint to track on the basis of 1) current_pose 2) waypoints_info 3) lookahead_distance
+      for (idx_=idx_memory; idx_ < path_.poses.size(); idx_++)
+      {
+        if (distance(path_.poses[idx_].pose.position, tf.transform.translation) > lookahead_distance_)
         {
-            map_to_robot_transform = tf_buffer_.lookupTransform(map_frame_id_, robot_frame_id_, ros::Time(0));
-
-            // Determina o waypoint a seguir com base na pose atual, informações dos waypoints e distância de lookahead
-            for (idx_ = idx_memory; idx_ < path_.poses.size(); idx_++)
-            {
-                if (distance(path_.poses[idx_].pose.position, current_pose.position) > lookahead_distance_)
-                {
-                    KDL::Frame pose_offset = trans2base(path_.poses[idx_].pose, map_to_robot_transform.transform);
-                    lookahead_.transform.translation.x = pose_offset.p.x();
-                    lookahead_.transform.translation.y = pose_offset.p.y();
-                    lookahead_.transform.translation.z = pose_offset.p.z();
-                    pose_offset.M.GetQuaternion(lookahead_.transform.rotation.x, lookahead_.transform.rotation.y,
-                                                lookahead_.transform.rotation.z, lookahead_.transform.rotation.w);
-                    idx_memory = idx_;
-                    break;
-                }
-            }
-
-            // Verifica se o objetivo (último waypoint) foi alcançado
-            if (!path_.poses.empty() && idx_ >= path_.poses.size())
-            {
-                KDL::Frame goal_offset = trans2base(path_.poses.back().pose, map_to_robot_transform.transform);
-
-                // Verifica se o objetivo é alcançado dentro da tolerância de posição
-                if (fabs(goal_offset.p.x()) <= position_tolerance_)
-                {
-                    goal_reached_ = true;
-                    path_ = nav_msgs::Path(); // Reseta o caminho
-                }
-                else
-                {
-                    // Implementa a lógica para estender a distância de lookahead além do objetivo, se não alcançado
-                    double roll, pitch, yaw;
-                    goal_offset.M.GetRPY(roll, pitch, yaw);
-                    double k_end = tan(yaw); // Inclinação da linha definida pelo último waypoint
-                    double l_end = goal_offset.p.y() - k_end * goal_offset.p.x();
-                    double a = 1 + k_end * k_end;
-                    double b = 2 * l_end;
-                    double c = l_end * l_end - pow(lookahead_distance_, 2);
-                    double D = sqrt(b*b - 4*a*c);
-                    double x_ld = (-b + copysign(D, v_)) / (2*a);
-                    double y_ld = k_end * x_ld + l_end;
-                    
-                    lookahead_.transform.translation.x = x_ld;
-                    lookahead_.transform.translation.y = y_ld;
-                    lookahead_.transform.translation.z = goal_offset.p.z();
-                    goal_offset.M.GetQuaternion(lookahead_.transform.rotation.x, lookahead_.transform.rotation.y,
-                                                lookahead_.transform.rotation.z, lookahead_.transform.rotation.w);
-                }
-            }
-
-            // Lógica do seguidor de waypoints
-            if (!goal_reached_)
-            {
-                double lateral_offset = lookahead_.transform.translation.y;
-                cmd_vel_.angular.z = std::min(2 * v_ / lookahead_distance_ * lateral_offset, w_max_);
-
-                // Ângulo de direção desejado para Ackermann
-                cmd_acker_.drive.steering_angle = std::min(atan2(2 * lateral_offset * wheel_base_, pow(lookahead_distance_, 2)), delta_max_);
-
-                // Velocidade linear
-                cmd_vel_.linear.x = v_;
-                cmd_acker_.drive.speed = v_;
-                cmd_acker_.header.stamp = ros::Time::now();
-            }
-            else
-            {
-                // Para o veículo quando o objetivo é alcançado
-                cmd_vel_.linear.x = 0.00;
-                cmd_vel_.angular.z = 0.00;
-
-                cmd_acker_.header.stamp = ros::Time::now();
-                cmd_acker_.drive.steering_angle = 0.00;
-                cmd_acker_.drive.speed = 0.00;
-            }
-
-            // Publica a transformação lookahead, o comando de velocidade e o comando Ackermann
-            lookahead_.header.stamp = ros::Time::now();
-            tf_broadcaster_.sendTransform(lookahead_);
-            pub_vel_.publish(cmd_vel_);
-            pub_acker_.publish(cmd_acker_);
-
-            // Publica o marcador lookahead para visualização
-            lookahead_marker_.header.frame_id = robot_frame_id_;
-            lookahead_marker_.header.stamp = ros::Time::now();
-            lookahead_marker_.ns = "lookahead_marker";
-            lookahead_marker_.id = 0;
-            lookahead_marker_.type = visualization_msgs::Marker::SPHERE;
-            lookahead_marker_.action = visualization_msgs::Marker::ADD;
-            lookahead_marker_.pose.position.x = lookahead_.transform.translation.x;
-            lookahead_marker_.pose.position.y = lookahead_.transform.translation.y;
-            lookahead_marker_.pose.position.z = lookahead_.transform.translation.z;
-            lookahead_marker_.pose.orientation.x = 0.0;
-            lookahead_marker_.pose.orientation.y = 0.0;
-            lookahead_marker_.pose.orientation.z = 0.0;
-            lookahead_marker_.pose.orientation.w = 1.0;
-            lookahead_marker_.scale.x = 0.2; // Tamanho do marcador
-            lookahead_marker_.scale.y = 0.2;
-            lookahead_marker_.scale.z = 0.2;
-            lookahead_marker_.color.r = 1.0; // Cor do marcador
-            lookahead_marker_.color.g = 0.0;
-            lookahead_marker_.color.b = 0.0;
-            lookahead_marker_.color.a = 1.0; // Não transparente
-            pub_marker_.publish(lookahead_marker_);
+          KDL::Frame pose_offset = trans2base(path_.poses[idx_].pose, tf.transform);
+          lookahead_.transform.translation.x = pose_offset.p.x();
+          lookahead_.transform.translation.y = pose_offset.p.y();
+          lookahead_.transform.translation.z = pose_offset.p.z();
+          pose_offset.M.GetQuaternion(lookahead_.transform.rotation.x, lookahead_.transform.rotation.y,
+                                      lookahead_.transform.rotation.z, lookahead_.transform.rotation.w);
+          idx_memory = idx_;
+          break;
         }
-        catch (tf2::TransformException &ex)
+      }
+
+      // If approach the goal (last waypoint)
+      if (!path_.poses.empty() && idx_ >= path_.poses.size())
+      {
+        KDL::Frame goal_offset = trans2base(path_.poses.back().pose, tf.transform);
+
+        // Reach the goal
+        if (fabs(goal_offset.p.x()) <= position_tolerance_)
         {
-            ROS_WARN_STREAM(ex.what());
+          goal_reached_ = true;
+          path_ = nav_msgs::Path(); // Reset the path
         }
+        // Not meet the position tolerance: extend the lookahead distance beyond the goal
+        else
+        {
+          // Find the intersection between the circle of radius(lookahead_distance) centered at the current pose
+          // and the line defined by the last waypoint
+          double roll, pitch, yaw;
+          goal_offset.M.GetRPY(roll, pitch, yaw);
+          double k_end = tan(yaw); // Slope of line defined by the last waypoint
+          double l_end = goal_offset.p.y() - k_end * goal_offset.p.x();
+          double a = 1 + k_end * k_end;
+          double b = 2 * l_end;
+          double c = l_end * l_end - lookahead_distance_ * lookahead_distance_;
+          double D = sqrt(b*b - 4*a*c);
+          double x_ld = (-b + copysign(D,v_)) / (2*a);
+          double y_ld = k_end * x_ld + l_end;
+          
+          lookahead_.transform.translation.x = x_ld;
+          lookahead_.transform.translation.y = y_ld;
+          lookahead_.transform.translation.z = goal_offset.p.z();
+          goal_offset.M.GetQuaternion(lookahead_.transform.rotation.x, lookahead_.transform.rotation.y,
+                                      lookahead_.transform.rotation.z, lookahead_.transform.rotation.w);
+        }
+      }
+
+      // Waypoint follower
+      if (!goal_reached_)
+      {
+        v_ = copysign(v_max_, v_);
+        
+        //double lateral_offset = lookahead_.transform.translation.y;
+        double lateral_offset = lookahead_.transform.translation.y;
+        cmd_vel_.angular.z = std::min(2*v_/lookahead_distance_*lookahead_distance_*lateral_offset, w_max_);
+
+        // Desired Ackermann steering_angle
+        cmd_acker_.drive.steering_angle = std::min(atan2(2*lateral_offset*wheel_base_, lookahead_distance_*lookahead_distance_), delta_max_);
+        
+        // Linear velocity
+        cmd_vel_.linear.x = v_;
+        cmd_acker_.drive.speed = v_;
+        cmd_acker_.header.stamp = ros::Time::now();
+      }
+      // Reach the goal: stop the vehicle
+      else
+      {
+        cmd_vel_.linear.x = 0.00;
+        cmd_vel_.angular.z = 0.00;
+
+        cmd_acker_.header.stamp = ros::Time::now();
+        cmd_acker_.drive.steering_angle = 0.00;
+        cmd_acker_.drive.speed = 0.00;
+      }
+
+      // Publish the lookahead target transform.
+      lookahead_.header.stamp = ros::Time::now();
+      tf_broadcaster_.sendTransform(lookahead_);
+      // Publish the velocity command
+      if (hasObstacle == true){
+        cmd_vel_.linear.x = 0.00;
+        cmd_vel_.angular.z = 0.00;
+      }
+      pub_vel_.publish(cmd_vel_);
+      
+      //pub_vel_.publish(cmd_vel_);
+      // Publish the ackerman_steering command
+      pub_acker_.publish(cmd_acker_);
+      // Publish the lookahead_marker for visualization
+      lookahead_marker_.header.frame_id = "world";
+      lookahead_marker_.header.stamp = ros::Time::now();
+      lookahead_marker_.type = visualization_msgs::Marker::SPHERE;
+      lookahead_marker_.action = visualization_msgs::Marker::ADD;
+      lookahead_marker_.scale.x = 1;
+      lookahead_marker_.scale.y = 1;
+      lookahead_marker_.scale.z = 1;
+      lookahead_marker_.pose.orientation.x = 0.0;
+      lookahead_marker_.pose.orientation.y = 0.0;
+      lookahead_marker_.pose.orientation.z = 0.0;
+      lookahead_marker_.pose.orientation.w = 1.0;
+      lookahead_marker_.color.a = 1.0;
+      if (!goal_reached_)
+      {
+        lookahead_marker_.id = idx_;
+        lookahead_marker_.pose.position.x = path_.poses[idx_].pose.position.x;
+        lookahead_marker_.pose.position.y = path_.poses[idx_].pose.position.y;
+        lookahead_marker_.pose.position.z = path_.poses[idx_].pose.position.z;
+        lookahead_marker_.color.r = 0.0;
+        lookahead_marker_.color.g = 1.0;
+        lookahead_marker_.color.b = 0.0;
+        pub_marker_.publish(lookahead_marker_);
+      }
+      else
+      {
+        lookahead_marker_.id = idx_memory;
+        idx_memory += 1;
+        lookahead_marker_.pose.position.x = tf.transform.translation.x;
+        lookahead_marker_.pose.position.y = tf.transform.translation.y;
+        lookahead_marker_.pose.position.z = tf.transform.translation.z;
+        lookahead_marker_.color.r = 1.0;
+        lookahead_marker_.color.g = 0.0;
+        lookahead_marker_.color.b = 0.0;
+        if (idx_memory%5 == 0)
+        {
+          pub_marker_.publish(lookahead_marker_); 
+        }
+      }
     }
+    catch (tf2::TransformException &ex)
+    {
+      ROS_WARN_STREAM(ex.what());
+    }
+  }
 }
-
-
-
 
 void PurePursuit::waypoints_listener(nav_msgs::Path new_path)
 { 
@@ -273,6 +370,8 @@ int main(int argc, char**argv)
 
   PurePursuit controller;
   controller.run();
+
+  //ros::spin();
 
   return 0;
 }
