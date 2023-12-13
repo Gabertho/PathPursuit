@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+
+<launch>
+	<arg name="model"/>
+
+	<param name="robot_description" textfile="$(find mobile_rob_dev_sim)/urdf/mobile_rob_dev_sim.urdf"/>
+
+	<!-- Launch Static TF -->
+	<node pkg="tf2_ros" type="static_transform_publisher" name="map_world_broadcaster" args=" 0 0 0  0 0 0  map world"/>
+	<!-- TF Sonar -->
+	<node pkg="tf2_ros" type="static_transform_publisher" name="sonar_front_broadcaster" args=" 0.270 0 0.145  0 0 0  odom sonar_front"/>
+	<node pkg="tf2_ros" type="static_transform_publisher" name="sonar_back_broadcaster" args=" -0.278 0 0.145  3.141 0 0  odom sonar_back"/>
+	<!-- TF Camera -->    
+	<node pkg="tf2_ros" type="static_transform_publisher" name="camera_broadcaster" args=" 0.241 0.022 0.2075  0 0 0  odom camera_link"/>
+	<node pkg="tf2_ros" type="static_transform_publisher" name="camera_base_broadcaster" args=" 0.231 0 0.195  0 0 0  odom base_link"/>
+	<node pkg="tf2_ros" type="static_transform_publisher" name="camera_screw_broadcaster" args=" 0.231 0 0.195  0 0 0  odom camera_bottom_screw_frame"/>
+	<node pkg="tf2_ros" type="static_transform_publisher" name="camera_imu_broadcaster" args=" 0.241 0.022 0.2075  0 0 0  odom camera_imu_optical_frame"/>
+	<!-- TF LIDAR -->    
+	<node pkg="tf2_ros" type="static_transform_publisher" name="rplidar_broadcaster" args=" 0.237 0 0.045  3.141 0 0  odom laser"/>
+
+	<!-- NETOOOO -->
+	<!--node pkg="tf2_ros" type="static_transform_publisher" name="map_world_broadcaster" args=" 0 0 0  0 0 0  map world" /-->
+	<!--node pkg="tf2_ros" type="static_transform_publisher" name="sonar_front_broadcaster" args=" 0.11 0 0  0 0 0  odom sonar_front" /-->
+	<!--node pkg="tf2_ros" type="static_transform_publisher" name="sonar_back_broadcaster" args=" -0.11 0 0  3.1415 0 0  odom sonar_back" /-->
+	<node pkg="tf2_ros" type="static_transform_publisher" name="base_link_broadcaster" args=" 0 0 0 0 0 0  base_link map"/>
+	<node pkg="tf2_ros" type="static_transform_publisher" name="left_wheel_broadcaster" args=" 0 0.25 0  0 0 0  base_link left_wheel"/>
+	<node pkg="tf2_ros" type="static_transform_publisher" name="right_wheel_broadcaster" args=" 0 -0.25 0  0 0 0  base_link right_wheel"/>
+	<node pkg="tf2_ros" type="static_transform_publisher" name="odom_wheel_broadcaster" args=" 0 0 0 0 0 0  world odom"/>
+
+	<node name="joint_state_publisher_gui" pkg="joint_state_publisher_gui" type="joint_state_publisher_gui"/>
+
+	<node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
+
+	<node name="rviz" pkg="rviz" type="rviz" args="-d $(find skate_bot)/rviz/mobile_rob_dev_sim_camera_lidar_track2.rviz"/>
+</launch>

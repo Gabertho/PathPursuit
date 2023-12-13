@@ -1,0 +1,113 @@
+<?xml version="1.0"?>
+<!-- gazebo.launch
+
+Created by: Kelen Teixeira Vivaldini on Nov 30, 2023
+Last Modified: vivaldini
+
+Description: This is the gazebo launch for the mobile_rob_dev_sim V6 robot in a simulation environment.
+-->
+
+<launch>
+    <arg name="x" default="0.0"/>
+    <arg name="y" default="0.0"/>
+    <arg name="z" default="0.0"/>
+    <arg name="roll" default="0.0"/>
+    <arg name="pitch" default="0.0"/>
+    <arg name="yaw" default="0.0"/>
+    <arg name="wheel_base" default="0.50" doc="wheelbase"/>
+    <arg name="lookahead_distance" default="1.0" doc="lookahead distance"/>
+    <arg name="w_max" default="1.0" doc="max rotational velocity"/>
+    <arg name="position_tolerance" default="0.1" doc="position tolerance"/>
+    <arg name="delta_vel" default="1.0" doc="steering angle velocity"/>
+    <arg name="acc" default="0.5" doc="acceleration"/>
+    <arg name="jerk" default="0.5.0" doc="jerk"/>
+    <arg name="delta_max" default="1.57" doc="steering angle limit"/>
+    <arg name="map_frame_id" default="map" doc="map frame id"/>
+    <arg name="robot_frame_id" default="base_link" doc="robot frame id"/>
+    <arg name="lookahead_frame_id" default="lookahead" doc="lookahead frame id"/>
+    <arg name="acker_frame_id" default="rear_axle_midpoint" doc="ackermann frame id"/>
+    <param name="robot_description" command="$(find xacro)/xacro --inorder $(find mobile_rob_dev_sim)/urdf/mobile_rob_dev_sim.urdf use_nominal_extrinsics:=true add_plug:=true"/>
+
+    <include file="$(find gazebo_ros)/launch/empty_world.launch">
+        <arg name="world_name" value="$(find envrobotz)/worlds/EnvDC_2ndfloor.world"/>
+        <arg name="paused" value="false"/>
+        <arg name="use_sim_time" value="true"/>
+        <arg name="gui" value="true"/>
+        <arg name="headless" value="false"/>
+        <arg name="debug" value="false"/>
+    </include>
+
+    <node name="spawn_model" pkg="gazebo_ros" type="spawn_model" args="-file $(find mobile_rob_dev_sim)/urdf/mobile_rob_dev_sim.urdf -urdf -model mobile_rob_dev_sim -x $(arg x) -y $(arg y) -z $(arg z) -R $(arg roll) -P $(arg pitch) -Y $(arg yaw)" output="screen"/>
+    <node name="fake_joint_calibration" pkg="rostopic" type="rostopic" args="pub /calibrated std_msgs/Bool true"/>
+
+    <node name="joint_state_publisher_gui" pkg="joint_state_publisher_gui" type="joint_state_publisher_gui"/>
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
+
+    <!-- Map Server -->
+    <arg name="map_file" default="/home/gabriel/dcrobot_ws/src/dcrobot/mobile_rob_dev_sim/config/mapa.yaml"/>
+    <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)"/>
+    
+    <!-- AMCL Node -->
+<node pkg="amcl" type="amcl" name="amcl" output="screen">
+    <param name="use_map_topic" value="true"/>
+    <param name="odom_frame_id" value="odom"/>
+    <param name="base_frame_id" value="base_link"/>
+    <param name="global_frame_id" value="map"/>
+    <param name="odom_model_type" value="diff"/>
+    <param name="odom_alpha5" value="0.1"/>
+    <param name="gui_publish_rate" value="10.0"/>
+    <param name="laser_max_beams" value="60"/>
+    <param name="laser_max_range" value="12.0"/>
+    <param name="min_particles" value="1000"/>
+    <param name="max_particles" value="10000"/>
+    <param name="kld_err" value="0.05"/>
+    <param name="kld_z" value="0.99"/>
+    <param name="odom_alpha1" value="0.2"/>
+    <param name="odom_alpha2" value="0.2"/>
+    <param name="odom_alpha3" value="0.2"/>
+    <param name="odom_alpha4" value="0.2"/>
+    <param name="laser_z_hit" value="0.5"/>
+    <param name="laser_z_short" value="0.05"/>
+    <param name="laser_z_max" value="0.05"/>
+    <param name="laser_z_rand" value="0.5"/>
+    <param name="laser_sigma_hit" value="0.2"/>
+    <param name="laser_lambda_short" value="0.1"/>
+    <param name="laser_model_type" value="likelihood_field"/>
+    <param name="laser_likelihood_max_dist" value="2.0"/>
+    <param name="update_min_d" value="0.25"/>
+    <param name="update_min_a" value="0.2"/>
+    <param name="resample_interval" value="1"/>
+    <param name="transform_tolerance" value="1.0"/>
+    <param name="recovery_alpha_slow" value="0.001"/>
+    <param name="recovery_alpha_fast" value="0.1"/>
+    <remap from="scan" to="/scan"/>
+</node>
+    
+     <!---run pure_pursuit -->
+     <node pkg="mobile_rob_dev_sim" type="pure_pursuit" name="pure_pursuit" output="screen" >
+	<param name="wheelbase" value="$(arg wheel_base)"/>
+	<param name="lookahead_distance" value="$(arg lookahead_distance)"/>
+	<param name="max_rotational_velocity" value="$(arg w_max)"/>
+	<param name="position_tolerance" value="$(arg position_tolerance)"/>
+	<param name="steering_angle_velocity" value="$(arg delta_vel)"/>
+	<param name="acceleration" value="$(arg acc)"/>
+	<param name="jerk" value="$(arg jerk)"/>
+	<param name="steering_angle_limit" value="$(arg delta_max)"/>
+	<param name="map_frame_id" value="$(arg map_frame_id)"/>
+	<param name="robot_frame_id" value="$(arg robot_frame_id)"/>
+	<param name="lookahead_frame_id" value="$(arg lookahead_frame_id)"/>
+	<param name="acker_frame_id" value="$(arg acker_frame_id)"/>
+	</node>
+    
+    <!-- Start astar node -->
+    <node pkg="mobile_rob_dev_sim" type="astar_node" name="astar_node" output="screen">
+        <param name="occupancy_map_threshold" value="65"/>            
+        <param name="occupancy_map_inflation_radius" value="0.35"/>
+    </node>
+    
+
+    <!-- Start rviz -->
+    <node pkg="rviz" type="rviz" name="rviz" args="-d $(find mobile_rob_dev_sim)/rviz/astar.rviz"/>
+  
+</launch>
+
