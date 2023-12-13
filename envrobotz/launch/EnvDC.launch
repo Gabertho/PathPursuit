@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<!-- 
+EnvDC00.launch
+
+Created by: Kelen Teixeira Vivaldini on Nov 30.2023
+Last Modified: vivaldini
+
+Description: This is the virtual environment launch of UFSCar DC Department model (version EnvDC00).
+-->
+
+
+<launch>
+    <include file="$(find gazebo_ros)/launch/empty_world.launch">
+        <!-- DC Robot starts MakerSpace room -->
+        <!-- <arg name="world_name" value="$(find envrobotz)/worlds/EnvDC_MakerSpace.world"/> -->
+
+        <!-- DC Robot starts LARIS room pose -->
+        <!-- <arg name="world_name" value="$(find envrobotz)/worlds/EnvDC_2ndfloor.world"/> -->
+
+        <arg name="world_name" value="$(find envrobotz)/worlds/EnvDC_2ndfloor.world"/>
+        <arg name="paused" value="false"/>
+        <arg name="use_sim_time" value="true"/>
+        <arg name="gui" value="true"/>
+        <arg name="headless" value="false"/>
+        <arg name="debug" value="false"/>
+    </include>
+</launch>
