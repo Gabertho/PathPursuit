@@ -71,7 +71,12 @@ For trajectory planning, we implemented the A* (Astar) algorithm, which calculat
 The map, obtained in the previous step, is published by the topic /map (package map_server), and used as an Occupancy Grid in the implementation of the A* algorithm (astar.cpp and astar.h)
 
 ## Navigation 
-For navigation, we use an implementation of the Pure Pursuit Path Tracking algorithm. It computes the angular velocity command that moves the robot from its current position to reach some look-ahead point in front of the robot, while the linear velocity is assumed constant. Speed ​​commands are published in the /robot/cmd_vel topic
+For navigation, we use an implementation of the Pure Pursuit Path Tracking algorithm. It computes the angular velocity command that moves the robot from its current position to reach some look-ahead point in front of the robot, while the linear velocity is assumed constant. Speed ​​commands are published in the /robot/cmd_vel topic.
+
+Here is the Pure Pursuit basics:
+
+![image](https://github.com/Gabertho/Trajectory-Planning-and-Autonomous-Navigation-ROS/assets/59297927/ba97dad3-22a8-498d-80a7-e57c5ba30f24)
+
 
 ## Obstacle Avoidance
 For obstacle avoidance, we implemented a "naive" approach using the LIDAR sensor. The approach consists of stopping the robot's movement on the optimal path when an obstacle is detected, and keeping the robot stationary until the obstacle is no longer detected, thus resuming its trajectory.
