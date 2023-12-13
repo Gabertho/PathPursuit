@@ -74,6 +74,10 @@ Regarding the results, we obtain a very interesting autonomous navigation approa
 These flaws, which involve coordinate transformation problems in the Pure Pursuit algorithm, and the need to adjust parameters in the Astar algorithm, will be corrected as soon as possible. However, we want to emphasize that the approach has great potential to meet the scope of the project.
 
 
-[![IMAGE ALT TEXT]([http://img.youtube.com/vi/YOUTUBE_VIDEO_ID_HERE/0.jpg](https://img.youtube.com/vi/JWlF2P1npUk/hqdefault.jpg))]([http://www.youtube.com/watch?v=YOUTUBE_VIDEO_ID_HERE](https://youtu.be/JWlF2P1npUk)https://youtu.be/JWlF2P1npUk "Trajectory Planning and Autonomous Navigation ROS ")
+[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/JWlF2P1npUk/0.jpg)](https://www.youtube.com/watch?v=JWlF2P1npUk)
+
+
+
+
 
 
