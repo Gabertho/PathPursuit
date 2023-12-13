@@ -74,7 +74,7 @@ class PurePursuit
 
 void PurePursuit::checkcase(float right , float center , float left)
 {
-    if (center < 1.0)
+    if (center < 0.4)
     {
       std::cout<<"OBSTAAAACULOOO";
       hasObstacle = true;
