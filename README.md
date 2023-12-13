@@ -9,7 +9,7 @@ This package contains a toolkit designed for the DC Autonomous Mobile Robot. Dev
     	
 # How to use
 
-#Create directories
+### Create directories
 
 ```bash
 mkdir -p /home/$USER/workspace/src
