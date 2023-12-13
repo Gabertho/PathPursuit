@@ -9,6 +9,14 @@ This package contains a toolkit designed for the DC Autonomous Mobile Robot. Dev
     	
 # How to use
 
+
+### Required dependencies
+
+```bash
+sudo apt-get install ros-noetic-roscpp ros-noetic-std-msgs ros-noetic-geometry-msgs ros-noetic-nav-msgs ros-noetic-ackermann-msgs ros-noetic-tf2 ros-noetic-tf2-ros ros-noetic-rospy ros-noetic-roslaunch ros-noetic-robot-state-publisher ros-noetic-rviz ros-noetic-joint-state-publisher-gui ros-noetic-gazebo-ros ros-noetic-orocos-kdl libopencv-dev
+
+```
+
 ### Create directories
 
 ```bash
@@ -75,6 +83,11 @@ These flaws, which involve coordinate transformation problems in the Pure Pursui
 
 
 [![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/JWlF2P1npUk/0.jpg)](https://www.youtube.com/watch?v=JWlF2P1npUk)
+
+
+
+
+
 
 
 
