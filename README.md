@@ -18,11 +18,12 @@ sudo apt-get install ros-noetic-amcl ros-noetic-costmap-converter ros-noetic-dep
 
 ```
 
-### Create directories
+## Follow installation steps at https://github.com/vivaldini/dcrobot/tree/main, as follow:
 
+### Creade directories
 ```bash
-mkdir -p /home/$USER/workspace/src
-cd /home/$USER/workspace/
+mkdir -p /home/$USER/dcrobot_ws/src
+cd /home/$USER/dcrobot_ws/
 ```
 
 
@@ -36,22 +37,38 @@ catkin config -DCMAKE_BUILD_TYPE=Release
 ### Navigate to the directory of `src` to clone the `DC Robot project`
 
 ```bash
-cd /home/$USER/workspace/src
-git clone https://github.com/Gabertho/Trajectory-Planning-and-Autonomous-Navigation-ROS.git
+cd /home/$USER/dcrobot_ws/src
+git clone https://github.com/vivaldini/dcrobot.git
 ```
 
 ### Build the project
 ```bash
-cd /home/$USER/workspace/
+cd /home/$USER/dcrobot_ws/
 catkin build
 ```
 
 ### Source your catkin workspace
 ```bash
-source /home/$USER/workspace/devel/setup.bash
+source /home/$USER/dcrobot_ws/devel/setup.bash
 ```
 
-### (optional) if the steps above don't work, follow the installation steps at https://github.com/vivaldini/dcrobot and then replace the mobile_robot_dev_sim and envorobotz directories for the ones in this repository.
+### (optional) may you find some errors, so you can use the "Magic" of rosdep
+```bash
+cd /home/$USER/dcrobot_ws/src
+rosdep install --from-paths . --ignore-src --os=ubuntu:focal -r -y
+
+cd /home/$USER/dcrobot_ws/src/dcrobot
+catkin build
+source /home/$USER/dcrobot_ws/devel/setup.bash
+
+```
+
+
+### Next, git clone this repository
+```bash
+git clone https://github.com/Gabertho/Trajectory-Planning-and-Autonomous-Navigation-ROS.git
+```
+### Then, replace the directories envrobotz and mobile_rob_dev_sim at dcrobot_ws project for the ones in this repository.
 
 
 
@@ -82,13 +99,19 @@ Here is the Pure Pursuit basics:
 For obstacle avoidance, we implemented a "naive" approach using the LIDAR sensor. The approach consists of stopping the robot's movement on the optimal path when an obstacle is detected, and keeping the robot stationary until the obstacle is no longer detected, thus resuming its trajectory.
 
 
-## Results
+
+# Execution Flow
+
+
+# Results
 
 Regarding the results, we obtain a very interesting autonomous navigation approach, although there are some flaws.
 These flaws, which involve coordinate transformation problems in the Pure Pursuit algorithm, and the need to adjust parameters in the Astar algorithm, will be corrected as soon as possible. However, we want to emphasize that the approach has great potential to meet the scope of the project.
 
 
 [![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/JWlF2P1npUk/0.jpg)](https://www.youtube.com/watch?v=JWlF2P1npUk)
+
+
 
 
 
