@@ -75,17 +75,87 @@ git clone https://github.com/Gabertho/Trajectory-Planning-and-Autonomous-Navigat
 # Adopted methodology and results
 
 ## Mapping
-For the mapping step, we used gmapping (http://wiki.ros.org/gmapping), navigating the simulated environment with teleop. With this, we obtain the map.yaml and map.pgm that represent the environment.
+For the mapping step, we used gmapping [(http://wiki.ros.org/gmapping),](http://wiki.ros.org/gmapping) navigating the simulated environment with teleop. With this, we obtain the map.yaml and map.pgm that represent the environment.
+
+![image](https://github.com/Gabertho/Trajectory-Planning-and-Autonomous-Navigation-ROS/assets/59297927/8fa41d15-c823-42ef-8d07-8d06ff18d384)
+
 
 ## Localization
 
-For localization, we use the ROS amcl package, which implements the Adaptive Monte Carlo Localizer approach. We used this algorithm, instead of using odometry data, as this can accumulate errors throughout use, leading to possible failures in trajectory planning.
+For localization, we use the ROS amcl package (http://wiki.ros.org/amcl), which implements the Adaptive Monte Carlo Localizer approach. We used this algorithm, instead of using odometry data, as this can accumulate errors throughout use, leading to possible failures in trajectory planning.
+
+![image](https://github.com/Gabertho/Trajectory-Planning-and-Autonomous-Navigation-ROS/assets/59297927/b65c34c0-2cd9-422d-ac97-dfcb9faa28ee)
+
+![image](https://github.com/Gabertho/Trajectory-Planning-and-Autonomous-Navigation-ROS/assets/59297927/affd63af-7249-41c8-a8a0-10b1e3a7c7d0)
+
+
 
 
 ## Trajectory Planning
 For trajectory planning, we implemented the A* (Astar) algorithm, which calculates the optimal path between the starting and ending points, using a function composed of the cost of the movement plus a heuristic. The heuristic used was Manhattan, as it generates paths that are relatively more "distant from obstacles", such as walls, in relation to the Euclidean distance, which reduces possible collision problems.
 
 The map, obtained in the previous step, is published by the topic /map (package map_server), and used as an Occupancy Grid in the implementation of the A* algorithm (astar.cpp and astar.h)
+
+Pseudocode:
+
+```
+function reconstruct_path(cameFrom, current)
+    total_path := {current}
+    while current in cameFrom.Keys:
+        current := cameFrom[current]
+        total_path.prepend(current)
+    return total_path
+
+// A* finds a path from start to goal.
+// h is the heuristic function. h(n) estimates the cost to reach goal from node n.
+function A_Star(start, goal, h)
+    // The set of discovered nodes that may need to be (re-)expanded.
+    // Initially, only the start node is known.
+    // This is usually implemented as a min-heap or priority queue rather than a hash-set.
+    openSet := {start}
+
+    // For node n, cameFrom[n] is the node immediately preceding it on the cheapest path from the start
+    // to n currently known.
+    cameFrom := an empty map
+
+    // For node n, gScore[n] is the cost of the cheapest path from start to n currently known.
+    gScore := map with default value of Infinity
+    gScore[start] := 0
+
+    // For node n, fScore[n] := gScore[n] + h(n). fScore[n] represents our current best guess as to
+    // how cheap a path could be from start to finish if it goes through n.
+    fScore := map with default value of Infinity
+    fScore[start] := h(start)
+
+    while openSet is not empty
+        // This operation can occur in O(Log(N)) time if openSet is a min-heap or a priority queue
+        current := the node in openSet having the lowest fScore[] value
+        if current = goal
+            return reconstruct_path(cameFrom, current)
+
+        openSet.Remove(current)
+        for each neighbor of current
+            // d(current,neighbor) is the weight of the edge from current to neighbor
+            // tentative_gScore is the distance from start to the neighbor through current
+            tentative_gScore := gScore[current] + d(current, neighbor)
+            if tentative_gScore < gScore[neighbor]
+                // This path to neighbor is better than any previous one. Record it!
+                cameFrom[neighbor] := current
+                gScore[neighbor] := tentative_gScore
+                fScore[neighbor] := tentative_gScore + h(neighbor)
+                if neighbor not in openSet
+                    openSet.add(neighbor)
+
+    // Open set is empty but goal was never reached
+    return failure
+
+```
+
+![image](https://github.com/Gabertho/Trajectory-Planning-and-Autonomous-Navigation-ROS/assets/59297927/6a7401fb-84a1-43f9-a572-e7c15a9afdd7)
+
+
+We also added the "inflate obstacles" functionality to the A star algorithm, which is the gray region of the print. This prevents trajectories from being drawn close to obstacles such as walls, which could cause the robot to become entangled.
+
 
 ## Navigation 
 For navigation, we use an implementation of the Pure Pursuit Path Tracking algorithm. It computes the angular velocity command that moves the robot from its current position to reach some look-ahead point in front of the robot, while the linear velocity is assumed constant. Speed ​​commands are published in the /robot/cmd_vel topic.
@@ -97,6 +167,9 @@ Here is the Pure Pursuit basics:
 
 ## Obstacle Avoidance
 For obstacle avoidance, we implemented a "naive" approach using the LIDAR sensor. The approach consists of stopping the robot's movement on the optimal path when an obstacle is detected, and keeping the robot stationary until the obstacle is no longer detected, thus resuming its trajectory.
+
+![image](https://github.com/Gabertho/Trajectory-Planning-and-Autonomous-Navigation-ROS/assets/59297927/df1ef90d-2d30-4e32-aed5-9baa3d2c7f29)
+
 
 
 
