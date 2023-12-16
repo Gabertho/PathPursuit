@@ -242,6 +242,19 @@ void PurePursuit::cmd_generator(nav_msgs::Odometry odom)
         v_ = copysign(v_max_, v_);
         
         double lateral_offset = lookahead_.transform.translation.y;
+
+        if(std::isnan(lookahead_.transform.translation.x)){    
+          lookahead_.transform.translation.x = 0.01;
+        }
+
+        if(std::isnan(lookahead_.transform.translation.y)){
+          lookahead_.transform.translation.y = 0.01;
+        }
+
+        if(std::isnan(lateral_offset)){
+          lateral_offset = 0.01;
+        }
+        
         cmd_vel_.angular.z = std::min(2*v_/lookahead_distance_*lookahead_distance_*lateral_offset, w_max_);
 
         // Desired Ackermann steering_angle
