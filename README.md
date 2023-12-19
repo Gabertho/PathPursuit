@@ -94,7 +94,8 @@ For localization, we use the ROS amcl package (http://wiki.ros.org/amcl), which 
 ## Trajectory Planning
 For trajectory planning, we implemented the A* (Astar) algorithm, which calculates the optimal path between the starting and ending points, using a function composed of the cost of the movement plus a heuristic. The heuristic used was Manhattan, as it generates paths that are relatively more "distant from obstacles", such as walls, in relation to the Euclidean distance, which reduces possible collision problems.
 
-The map, obtained in the previous step, is published by the topic /map (package map_server), and used as an Occupancy Grid in the implementation of the A* algorithm (astar.cpp and astar.h)
+The map, obtained in the previous step, is published by the topic /map (package map_server), and used as an Occupancy Grid in the implementation of the A* algorithm (astar.cpp and astar.h).
+We used, as base, the Astar code provided on: https://github.com/lh9171338/Astar/tree/master
 
 Pseudocode:
 
@@ -159,6 +160,8 @@ We also added the "inflate obstacles" functionality to the A star algorithm, whi
 
 ## Navigation 
 For navigation, we use an implementation of the Pure Pursuit Path Tracking algorithm. It computes the angular velocity command that moves the robot from its current position to reach some look-ahead point in front of the robot, while the linear velocity is assumed constant. Speed ​​commands are published in the /robot/cmd_vel topic.
+
+We used, as base, the Pure Pursuit implementation provided at: https://github.com/leofansq/ROS_Pure_Pursuit.
 
 Here is the Pure Pursuit basics:
 
