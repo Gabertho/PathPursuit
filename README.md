@@ -70,7 +70,14 @@ git clone https://github.com/Gabertho/Trajectory-Planning-and-Autonomous-Navigat
 ```
 ### Then, replace the directories envrobotz and mobile_rob_dev_sim at dcrobot_ws project for the ones in this repository.
 
+## IMPORTANT!! You need to change, in the following line, in gazebo.launch file, to your mapa.yaml path.:
 
+```
+  <!-- Map Server -->
+    <arg name="map_file" default="/home/gabriel/dcrobot_ws/src/dcrobot/mobile_rob_dev_sim/config/mapa.yaml"/>
+    <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)"/>
+```
+Also, in     
 
 # Adopted methodology and results
 
