@@ -456,7 +456,7 @@
               <size>0.504146 0.15 2.5</size>
             </box>
           </geometry>
-          <pose>0 0 1.25 0 -0 0</pose>
+          <pose>0 0 1.25 0 -0 0</pose>	
           <max_contacts>10</max_contacts>
           <surface>
             <contact>
@@ -3833,32 +3833,21 @@
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
-      <model name='mobile_rob_dev_sim'>
-        <pose>-24.991 -12.0913 0.040815 3e-06 -0.002234 -0.011012</pose>
-        <scale>1 1 1</scale>
-        <link name='left_wheel'>
-          <pose>-24.9883 -11.8357 0.07668 -0.000149 -0.308535 -0.01096</pose>
-          <velocity>0.000768 0.000682 0.009802 -0.007954 0.009848 0.000579</velocity>
-          <acceleration>-0.19163 3.41733 32.1981 0.512481 1.4403 -1.37428</acceleration>
-          <wrench>-0.040465 0.721614 6.79904 0 -0 0</wrench>
-        </link>
-        <link name='map'>
-          <pose>-24.991 -12.0913 0.040815 3e-06 -0.002234 -0.011012</pose>
-          <velocity>0.000597 0.00212 0.004977 0.01782 0.004934 -0.000466</velocity>
-          <acceleration>-0.256574 -0.952089 11.6659 -0.277215 0.246774 2.74542</acceleration>
-          <wrench>-2.05737 -7.63444 93.5447 0 -0 0</wrench>
-        </link>
-        <link name='right_wheel'>
-          <pose>-24.9939 -12.3469 0.076678 3.14067 1.48301 3.12966</pose>
-          <velocity>0.00059 0.000723 0.000582 -0.009393 0.00761 -0.001483</velocity>
-          <acceleration>-0.164446 2.01567 -8.35542 -2.46397 -1.33706 -0.598147</acceleration>
-          <wrench>-0.034725 0.425635 -1.76436 0 -0 0</wrench>
-        </link>
-      </model>
+      
+      
+      
+    
+      
+      
+      
       <light name='sun'>
         <pose>0 0 10 0 -0 0</pose>
       </light>
+      
+      
+      
     </state>
+    
     <gui fullscreen='0'>
       <camera name='user_camera'>
         <pose>-31.7837 -11.8832 5.83052 0 0.704 -0.060002</pose>
@@ -3866,289 +3855,7 @@
         <projection_type>perspective</projection_type>
       </camera>
     </gui>
-    <model name='mobile_rob_dev_sim'>
-      <link name='map'>
-        <inertial>
-          <pose>-0.004615 0.000366 0.111305 0 -0 0</pose>
-          <mass>8.01862</mass>
-          <inertia>
-            <ixx>0.15664</ixx>
-            <ixy>2.06232e-09</ixy>
-            <ixz>-2.57543e-06</ixz>
-            <iyy>0.170505</iyy>
-            <iyz>-2.24882e-10</iyz>
-            <izz>0.273987</izz>
-          </inertia>
-        </inertial>
-        <collision name='map_fixed_joint_lump__base_link_collision'>
-          <pose>0 0 0 0 -0 0</pose>
-          <geometry>
-            <mesh>
-              <scale>1 1 1</scale>
-              <uri>/home/gabriel/dcrobot_ws/src/dcrobot/mobile_rob_dev_sim/meshes/base_link.STL</uri>
-            </mesh>
-          </geometry>
-          <max_contacts>10</max_contacts>
-          <surface>
-            <contact>
-              <ode/>
-            </contact>
-            <bounce/>
-            <friction>
-              <torsional>
-                <ode/>
-              </torsional>
-              <ode/>
-            </friction>
-          </surface>
-        </collision>
-        <collision name='map_fixed_joint_lump__base_rplidar_collision_1'>
-          <pose>0.255 0 0.05 0 -0 0</pose>
-          <geometry>
-            <box>
-              <size>0.06 0.06 0.03</size>
-            </box>
-          </geometry>
-          <surface>
-            <contact>
-              <ode/>
-            </contact>
-            <friction>
-              <ode/>
-              <torsional>
-                <ode/>
-              </torsional>
-            </friction>
-            <bounce/>
-          </surface>
-          <max_contacts>10</max_contacts>
-        </collision>
-        <visual name='map_fixed_joint_lump__base_link_visual'>
-          <pose>0 0 0 0 -0 0</pose>
-          <geometry>
-            <mesh>
-              <scale>1 1 1</scale>
-              <uri>/home/gabriel/dcrobot_ws/src/dcrobot/mobile_rob_dev_sim/meshes/base_link.STL</uri>
-            </mesh>
-          </geometry>
-        </visual>
-        <visual name='map_fixed_joint_lump__base_rplidar_visual_1'>
-          <pose>0.255 0 0.05 0 -0 0</pose>
-          <geometry>
-            <box>
-              <size>0.06 0.06 0.03</size>
-            </box>
-          </geometry>
-        </visual>
-        <sensor name='head_hokuyo_sensor' type='ray'>
-          <visualize>1</visualize>
-          <update_rate>40</update_rate>
-          <ray>
-            <scan>
-              <horizontal>
-                <samples>720</samples>
-                <resolution>1</resolution>
-                <min_angle>-1.5708</min_angle>
-                <max_angle>1.5708</max_angle>
-              </horizontal>
-              <vertical>
-                <samples>1</samples>
-                <min_angle>0</min_angle>
-                <max_angle>0</max_angle>
-              </vertical>
-            </scan>
-            <range>
-              <min>0.1</min>
-              <max>12</max>
-              <resolution>0.01</resolution>
-            </range>
-            <noise>
-              <type>gaussian</type>
-              <mean>0</mean>
-              <stddev>0.01</stddev>
-            </noise>
-          </ray>
-          <plugin name='gazebo_ros_head_hokuyo_controller' filename='libgazebo_ros_laser.so'>
-            <topicName>scan</topicName>
-            <frameName>base_rplidar</frameName>
-            <robotNamespace>/</robotNamespace>
-          </plugin>
-          <pose>0.255 0 0.05 0 -0 0</pose>
-        </sensor>
-        <self_collide>0</self_collide>
-        <enable_wind>0</enable_wind>
-        <kinematic>0</kinematic>
-      </link>
-      <joint name='left_wheel_joint' type='revolute'>
-        <pose relative_to='map'>0 0.25563 0.035863 0 -0 0</pose>
-        <parent>map</parent>
-        <child>left_wheel</child>
-        <axis>
-          <xyz>0 1 0</xyz>
-          <limit>
-            <lower>-1e+16</lower>
-            <upper>1e+16</upper>
-          </limit>
-          <dynamics>
-            <spring_reference>0</spring_reference>
-            <spring_stiffness>0</spring_stiffness>
-          </dynamics>
-        </axis>
-      </joint>
-      <link name='left_wheel'>
-        <pose relative_to='left_wheel_joint'>0 0 0 0 -0 0</pose>
-        <inertial>
-          <pose>0 0 0 0 -0 0</pose>
-          <mass>0.211163</mass>
-          <inertia>
-            <ixx>0.000475635</ixx>
-            <ixy>1.03329e-21</ixy>
-            <ixz>5.23184e-19</ixz>
-            <iyy>0.000931262</iyy>
-            <iyz>4.20388e-21</iyz>
-            <izz>0.000475635</izz>
-          </inertia>
-        </inertial>
-        <collision name='left_wheel_collision'>
-          <pose>0 0 0 0 -0 0</pose>
-          <geometry>
-            <mesh>
-              <scale>1 1 1</scale>
-              <uri>/home/gabriel/dcrobot_ws/src/dcrobot/mobile_rob_dev_sim/meshes/left_wheel.STL</uri>
-            </mesh>
-          </geometry>
-          <max_contacts>10</max_contacts>
-          <surface>
-            <contact>
-              <ode/>
-            </contact>
-            <bounce/>
-            <friction>
-              <torsional>
-                <ode/>
-              </torsional>
-              <ode/>
-            </friction>
-          </surface>
-        </collision>
-        <visual name='left_wheel_visual'>
-          <pose>0 0 0 0 -0 0</pose>
-          <geometry>
-            <mesh>
-              <scale>1 1 1</scale>
-              <uri>/home/gabriel/dcrobot_ws/src/dcrobot/mobile_rob_dev_sim/meshes/left_wheel.STL</uri>
-            </mesh>
-          </geometry>
-        </visual>
-        <self_collide>0</self_collide>
-        <enable_wind>0</enable_wind>
-        <kinematic>0</kinematic>
-      </link>
-      <joint name='right_wheel_joint' type='revolute'>
-        <pose relative_to='map'>0 -0.25563 0.035863 0 -0 0</pose>
-        <parent>map</parent>
-        <child>right_wheel</child>
-        <axis>
-          <xyz>0 1 0</xyz>
-          <limit>
-            <lower>-1e+16</lower>
-            <upper>1e+16</upper>
-          </limit>
-          <dynamics>
-            <spring_reference>0</spring_reference>
-            <spring_stiffness>0</spring_stiffness>
-          </dynamics>
-        </axis>
-      </joint>
-      <link name='right_wheel'>
-        <pose relative_to='right_wheel_joint'>0 0 0 0 -0 0</pose>
-        <inertial>
-          <pose>0 0 0 0 -0 0</pose>
-          <mass>0.211163</mass>
-          <inertia>
-            <ixx>0.000475635</ixx>
-            <ixy>1.38722e-22</ixy>
-            <ixz>6.95514e-19</ixz>
-            <iyy>0.000931262</iyy>
-            <iyz>4.22702e-21</iyz>
-            <izz>0.000475635</izz>
-          </inertia>
-        </inertial>
-        <collision name='right_wheel_collision'>
-          <pose>0 0 0 0 -0 0</pose>
-          <geometry>
-            <mesh>
-              <scale>1 1 1</scale>
-              <uri>/home/gabriel/dcrobot_ws/src/dcrobot/mobile_rob_dev_sim/meshes/right_wheel.STL</uri>
-            </mesh>
-          </geometry>
-          <max_contacts>10</max_contacts>
-          <surface>
-            <contact>
-              <ode/>
-            </contact>
-            <bounce/>
-            <friction>
-              <torsional>
-                <ode/>
-              </torsional>
-              <ode/>
-            </friction>
-          </surface>
-        </collision>
-        <visual name='right_wheel_visual'>
-          <pose>0 0 0 0 -0 0</pose>
-          <geometry>
-            <mesh>
-              <scale>1 1 1</scale>
-              <uri>/home/gabriel/dcrobot_ws/src/dcrobot/mobile_rob_dev_sim/meshes/right_wheel.STL</uri>
-            </mesh>
-          </geometry>
-        </visual>
-        <self_collide>0</self_collide>
-        <enable_wind>0</enable_wind>
-        <kinematic>0</kinematic>
-      </link>
-      <plugin name='differential_drive_controller' filename='libgazebo_ros_diff_drive.so'>
-        <alwaysOn>1</alwaysOn>
-        <updateRate>100</updateRate>
-        <legacyMode>0</legacyMode>
-        <leftJoint>left_wheel_joint</leftJoint>
-        <rightJoint>right_wheel_joint</rightJoint>
-        <wheelSeparation>0.50</wheelSeparation>
-        <wheelDiameter>0.15</wheelDiameter>
-        <torque>15</torque>
-        <commandTopic>robot/cmd_vel</commandTopic>
-        <odometryTopic>odom</odometryTopic>
-        <odometryFrame>odom</odometryFrame>
-        <robotBaseFrame>base_link</robotBaseFrame>
-        <publishWheelTF>0</publishWheelTF>
-        <publishWheelJointState>0</publishWheelJointState>
-        <rosDebugLevel>na</rosDebugLevel>
-        <wheelAcceleration>0</wheelAcceleration>
-        <wheelTorque>15</wheelTorque>
-        <odometrySource>world</odometrySource>
-        <publishOdomTF>1</publishOdomTF>
-        <publishTf>1</publishTf>
-        <robotNamespace>/</robotNamespace>
-      </plugin>
-      <frame name='scan_joint' attached_to='base_rplidar'>
-        <pose>0 0 0 0 -0 0</pose>
-      </frame>
-      <frame name='scan' attached_to='scan_joint'/>
-      <frame name='rplidar_joint' attached_to='base_link'>
-        <pose>0.255 0 0.05 0 -0 0</pose>
-      </frame>
-      <frame name='base_rplidar' attached_to='rplidar_joint'/>
-      <frame name='fixed_odom_to_base_link' attached_to='odom'>
-        <pose>0 0 0 0 -0 0</pose>
-      </frame>
-      <frame name='base_link' attached_to='fixed_odom_to_base_link'/>
-      <frame name='fixed_map_to_odom' attached_to='map'>
-        <pose>0 0 0 0 -0 0</pose>
-      </frame>
-      <frame name='odom' attached_to='fixed_map_to_odom'/>
-      <pose>0 0 0 0 -0 0</pose>
-    </model>
+    
+    
   </world>
 </sdf>
