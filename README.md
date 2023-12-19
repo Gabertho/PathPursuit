@@ -236,7 +236,7 @@ Regarding the results, we obtain a very interesting autonomous navigation approa
 These flaws, which involve coordinate transformation problems in the Pure Pursuit algorithm, and the need to adjust parameters in the Astar algorithm, will be corrected as soon as possible. However, we want to emphasize that the approach has great potential to meet the scope of the project.
 
 
-[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/JWlF2P1npUk/0.jpg)](https://www.youtube.com/watch?v=JWlF2P1npUk)
+[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/OLs-SMkg3II/0.jpg)](https://www.youtube.com/watch?v=OLs-SMkg3II)
 
 
 
