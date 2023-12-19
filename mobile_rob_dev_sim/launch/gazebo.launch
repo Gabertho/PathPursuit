@@ -52,14 +52,14 @@ Description: This is the gazebo launch for the mobile_rob_dev_sim V6 robot in a 
     
     <!-- AMCL Node -->
 <node pkg="amcl" type="amcl" name="amcl" output="screen">
+    <param name="initial_pose_x" value="-24.0"/>
+    <param name="initial_pose_y" value="-12.0"/>
+    <param name="initial_pose_a" value="0.0"/>
     <param name="use_map_topic" value="true"/>
     <param name="odom_frame_id" value="odom"/>
     <param name="base_frame_id" value="base_link"/>
     <param name="global_frame_id" value="map"/>
     <param name="odom_model_type" value="diff"/>
-    <param name="initial_pose_x" value="-24.0"/>
-    <param name="initial_pose_y" value="-12.0"/>
-    <param name="initial_pose_a" value="0.0"/>
     <param name="odom_alpha5" value="0.1"/>
     <param name="gui_publish_rate" value="10.0"/>
     <param name="laser_max_beams" value="60"/>
