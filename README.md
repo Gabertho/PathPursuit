@@ -7,7 +7,7 @@ The repository contains the ROS code for a trajectory planner using the A-star a
 This package contains a toolkit designed for the DC Autonomous Mobile Robot. Developed as part of the Department of Computer - Autonomous Mobile Robot (DCAMR) Project, this toolkit provides essential functionalities for the DC robot's autonomous capabilities.
 
     	
-# How to use
+# How to install
 
 
 ### Required dependencies
