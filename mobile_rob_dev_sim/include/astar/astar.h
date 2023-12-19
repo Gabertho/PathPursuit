@@ -1,4 +1,5 @@
 
+
 #ifndef ASTAR_H
 #define ASTAR_H
 
@@ -12,10 +13,12 @@
 #include <tf2/LinearMath/Vector3.h>
 #include <boost/numeric/ublas/matrix.hpp>
 
-
 namespace astar {
 
 #define NULL_STATE State(-1, -1)
+#define DISTANCE_THRESHOLD 15  // Adjust as needed
+#define PROXIMITY_THRESHOLD 1  // Adjust as needed
+#define COST_FACTOR 100 // Adjust as needed
 
 using namespace boost::numeric::ublas;
 
@@ -92,6 +95,8 @@ private:
     bool IsStateValid_(const State &state);
     float Heuristic_(const State &lhs, const State &rhs);
     void ReconstructPath_(const matrix<Node> &graph, const State &target_state, std::vector<tf2::Vector3> &path_w);
+    bool IsTooCloseToWall(const State &state, float threshold);
+    float CalculateWallProximityCost(const State &state);
 };
 
 Astar::Astar(MapPtr &map_ptr){
@@ -171,6 +176,9 @@ void Astar::Plan(const tf2::Vector3 &source_point_w, const tf2::Vector3 &target_
             // Possible g score
             float tentative_g_score = graph_(curr_state.row, curr_state.col).g_cost + edge.weight;
 
+            // Add cost for proximity to walls
+            tentative_g_score += CalculateWallProximityCost(neighbor_state);
+
             // Check whether node should be updated
             if(tentative_g_score < graph_(neighbor_state.row, neighbor_state.col).g_cost){
                 // Update cost values and come from
@@ -200,12 +208,18 @@ inline State Astar::WorldPointToState_(const tf2::Vector3 &point_w){
 }
 
 inline bool Astar::IsStateValid_(const State &state){
-    return map_ptr_->IsMapIndicesValid(state.row, state.col);
-};
+    if (!map_ptr_->IsMapIndicesValid(state.row, state.col)) {
+        return false;
+    }
+    if (IsTooCloseToWall(state, DISTANCE_THRESHOLD)) {
+        return false;
+    }
+    return true;
+}
 
 inline float Astar::Heuristic_(const State &lhs, const State &rhs){
     // Manhattan
-       return std::abs(lhs.row - rhs.row) + std::abs(lhs.col - rhs.col);
+    return std::abs(lhs.row - rhs.row) + std::abs(lhs.col - rhs.col);
 }
 
 void Astar::ReconstructPath_(const matrix<Node> &graph, const State &target_state, std::vector<tf2::Vector3> &path_w){
@@ -223,6 +237,26 @@ void Astar::ReconstructPath_(const matrix<Node> &graph, const State &target_stat
         curr_state = graph(curr_state.row, curr_state.col).come_from;
     }
     std::reverse(path_w.begin(), path_w.end());
+}
+
+bool Astar::IsTooCloseToWall(const State &state, float threshold) {
+    // Verifique em volta do estado atual para detectar paredes próximas
+    for (int i = -threshold; i <= threshold; ++i) {
+        for (int j = -threshold; j <= threshold; ++j) {
+            if (map_ptr_->IsWall(state.row + i, state.col + j)) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+float Astar::CalculateWallProximityCost(const State &state) {
+    // Custo baseado na proximidade da parede
+    if (IsTooCloseToWall(state, PROXIMITY_THRESHOLD)) {
+        return COST_FACTOR;
+    }
+    return 0;
 }
 
 }  // namespace astar
