@@ -93,7 +93,6 @@ void GridWorld::ProcessQuery()
 
         if (!path_w.empty())
         {
-            ROS_INFO("Path found, publishing path.");
             PublishPath_(path_w);
         }
         else
@@ -113,14 +112,11 @@ void GridWorld::CallbackRobotPose_(const geometry_msgs::PoseWithCovarianceStampe
 {
     // Atualize source_point_ com a posição atual do robô
     source_point_ = {msg->pose.pose.position.x, msg->pose.pose.position.y, msg->pose.pose.position.z};
-    ROS_INFO("Received robot position: x = %f, y = %f", source_point_.x(), source_point_.y());
-
     // Ajuste as flags conforme necessário
     source_point_flag_ = true;
     if (map_flag_ && target_point_flag_)
     {
         start_planning_flag_ = true;
-        ROS_INFO("Robot pose received, ready to start planning.");
     }
 }
 
