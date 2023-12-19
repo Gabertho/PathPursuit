@@ -217,7 +217,7 @@ This file implements the A* algorithm for pathfinding in a ROS environment. It u
 
 ---
 
-You can see the nodes interactiond and the transformations in the images below:
+You can see the nodes interaction and the transformations in the images below:
 
 ![rosgraph](https://github.com/Gabertho/Trajectory-Planning-and-Autonomous-Navigation-ROS/assets/59297927/47148b49-23a3-4f74-8016-a6674b806d73)
 
