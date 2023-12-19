@@ -76,12 +76,11 @@ void PurePursuit::checkcase(float right , float center , float left)
 {
     if (center < 0.4)
     {
-      std::cout<<"OBSTACULO DETECTADO!! AFASTE-SE!";
+      std::cout<<"Obstáculo detectado. Afaste-se!";
       hasObstacle = true;
     }
     else 
     {
-      std::cout<<"Nenhum obstaculo detectado.";
       hasObstacle = false;
     }
 
@@ -125,10 +124,6 @@ void PurePursuit::laser_callback(const sensor_msgs::LaserScan::ConstPtr& msg)
     float centermin = smallestofarray(center , length/3);
     float leftmin = smallestofarray(left , length/3);
 
-    std::cout<<"  "<<rightmin;
-    std::cout<<"  "<<centermin;
-    std::cout<<"   "<<leftmin;
-    std::cout<<"\n"; 
 
     checkcase(rightmin , centermin , leftmin);
 
