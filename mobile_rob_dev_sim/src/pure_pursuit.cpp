@@ -76,12 +76,12 @@ void PurePursuit::checkcase(float right , float center , float left)
 {
     if (center < 0.4)
     {
-      std::cout<<"OBSTAAAACULOOO";
+      std::cout<<"OBSTACULO DETECTADO!! AFASTE-SE!";
       hasObstacle = true;
     }
     else 
     {
-      std::cout<<"nadaaaaaaaaaa";
+      std::cout<<"Nenhum obstaculo detectado.";
       hasObstacle = false;
     }
 
