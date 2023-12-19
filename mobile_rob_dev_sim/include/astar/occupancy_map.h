@@ -1,3 +1,27 @@
+/******************************************************************************
+* MIT License
+* 
+* Copyright (c) 2022 Haluk Erdogan
+* 
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all
+* copies or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+* SOFTWARE.
+******************************************************************************/
+
 #ifndef OCCUPANCY_MAP_H
 #define OCCUPANCY_MAP_H
 
@@ -27,6 +51,7 @@ private:
     tf2::Quaternion map_frame_orientation_w_;
     tf2::Transform transform_world_to_map_;
     tf2::Transform transform_map_to_world_;
+    uchar occupied_thresh_gray_ = static_cast<uchar>(0.65 * 255); // Limiar de ocupação em escala de cinza
     
 public:
     OccupancyMap(){}
@@ -41,6 +66,7 @@ public:
     std::pair<int,int> WorldToMapIndices(const tf2::Vector3 &point_w);
     bool IsMapIndicesValid(const int &row, const int &col);
     bool IsMapIndexValid(const int &id);
+    bool IsWall(const int &row, const int &col);
     bool IsMapPointValid(const tf2::Vector3 &point_m);
     bool IsWorldPointValid(const tf2::Vector3 &point_w);
     std::string GetFrameID();
@@ -175,6 +201,14 @@ inline bool OccupancyMap::IsMapIndicesValid(const int &row, const int &col){
         && row < nrows_ 
         && col < ncols_
         && inflated_map_image_.at<bool>(row, col) == false);
+}
+
+bool OccupancyMap::IsWall(const int &row, const int &col) {
+    if (row < 0 || col < 0 || row >= nrows_ || col >= ncols_) {
+        return false;  // Fora dos limites do mapa
+    }
+    // Considera a célula como parede se o valor na imagem do mapa exceder o limiar de ocupação
+    return map_image_.at<uchar>(row, col) >= occupied_thresh_gray_;
 }
 
 inline bool OccupancyMap::IsMapPointValid(const tf2::Vector3 &point_m){
