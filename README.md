@@ -225,7 +225,12 @@ You can see the nodes interaction and the transformations in the images below:
 
 
 
+# How to use
 
+- Step 1: roslaunch gazebo.launch
+- Step 2: With RVIZ open, set the correct starting position of the robot using 2D Pose estimate.
+- Step 3: Then, just set the desired goal position using the 2D Nav Goal.
+- Step 4: From this point on, it is no longer necessary to use 2D pose estimate, just use 2D Nav goal to select the desired destination.
 # Results
 
 Regarding the results, we obtain a very interesting autonomous navigation approach, although there are some flaws.
