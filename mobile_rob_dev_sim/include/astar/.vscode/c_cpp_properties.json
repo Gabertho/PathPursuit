@@ -1,0 +1,25 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "${default}",
+        "limitSymbolsToIncludedHeaders": false
+      },
+      "includePath": [
+        "/home/gabriel/dcrobot_ws/devel/include/**",
+        "/opt/ros/noetic/include/**",
+        "/home/gabriel/dcrobot_ws/src/dcrobot/mobile_rob_dev/include/**",
+        "/home/gabriel/dcrobot_ws/src/dcrobot/mobile_rob_dev_sim/include/**",
+        "/home/gabriel/dcrobot_ws/src/dcrobot/smb_gazebo/include/**",
+        "/home/gabriel/dcrobot_ws/src/dcrobot/planning/smb_path_planner/smb_navigation/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS",
+      "intelliSenseMode": "gcc-x64",
+      "compilerPath": "/usr/bin/gcc",
+      "cStandard": "gnu11",
+      "cppStandard": "c++14"
+    }
+  ],
+  "version": 4
+}
