@@ -246,6 +246,11 @@ These flaws, which involve coordinate transformation problems in the Pure Pursui
 [![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/OLs-SMkg3II/0.jpg)](https://www.youtube.com/watch?v=OLs-SMkg3II)
 
 
+# Problems
+In some cases, the robot fails to execute turns. This occurs because the curve, planned by Astar, is very close to the wall, interfering with the obstacle avoidance algorithm (which detects the wall as an obstacle in these cases, ceasing movement). To correct these possible flaws, we plan to implement a trajectory smoothing method.
+Furthermore, we plan to implement a PID controller so that linear and angular speeds are more appropriate when making curves, helping to avoid this problem.
+
+
 
 
 
